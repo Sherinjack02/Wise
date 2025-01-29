@@ -5,10 +5,8 @@ from selenium import webdriver
 from selenium.webdriver.common.by import By
 from selenium.webdriver.support.wait import WebDriverWait
 from selenium.webdriver.support import expected_conditions as EC
-from datetime import datetime
+from selenium.webdriver.common.action_chains import ActionChains
 
-today_date = datetime.today().day
-today_month_year = datetime.today().strftime("%B %Y")
 
 phone_number_xpath = "//span[contains(.,'Continue with Mobile')]"
 Ph_number_field_xpath = "//input[@placeholder='Phone number']"
@@ -27,14 +25,16 @@ presence_of_table_header_xpath = "(//div[@class='v-slide-group__wrapper']//div)[
 Lives_sessions_xpath = "(//a[@role='tab'])[2]"
 schedule_session_button_xpath = "//button[contains(.,'Schedule sessions')]"
 add_session_button_xpath = "//span[contains(.,'Add session')]"
-time_picker_xpath = "//div[@aria-owns='list-1937']"
+time_picker_xpath = "//div[@role='combobox']"
 time_xpath = "//div[@id='list-item-1252-40']"
+test = "(//div[@class='v-list-item__title'])[41]"
 pm_xpath = "(//div[contains(@class,'pa-2 d-flex')])[2]"
 create_button = "//button[contains(.,'Create')]"
 card_session_name = "(//div[contains(@class,'heading py-10')]//div)[1]"
 card_instructor_name = "(//div[contains(@class,'heading py-10')]//div)[2]"
 card_upcoming_text = "(//div[@class='text--14 font-weight--500']//span)[3]"
 session_time = "(//i[@aria-hidden='true']/following-sibling::div)[1]"
+web_element = "//div[@class='v-list-item__title']"
 
 @pytest.fixture()
 def setup_and_teatdown():
@@ -52,7 +52,10 @@ def check_pm(xpath):
     if text != "PM":
         wait.until(EC.element_to_be_clickable((By.XPATH, xpath))).click()
         time.sleep(4)
-
+    def click_coordinate(xpath):
+            action_chains = ActionChains(driver)
+            button = driver.find_element(By.XPATH, xpath)
+            action_chains.move_to_element(button).click().perform()
 def login_with_phn():
     wait = WebDriverWait(driver, 20)
     wait.until(EC.element_to_be_clickable((By.XPATH, phone_number_xpath))).click()
@@ -90,11 +93,16 @@ def test_tc3(setup_and_teatdown):
     time.sleep(4)
     wait.until(EC.element_to_be_clickable((By.XPATH, Lives_sessions_xpath))).click()
     wait.until(EC.element_to_be_clickable((By.XPATH, schedule_session_button_xpath))).click()
+    time.sleep(3)
     wait.until(EC.element_to_be_clickable((By.XPATH, add_session_button_xpath))).click()
     time.sleep(5)
     check_pm(pm_xpath)
-    time.sleep(3)
+    time.sleep(5)
+    action_chains = ActionChains(driver)
+    button = driver.find_element(By.XPATH, create_button )
+    action_chains.move_to_element(button).click().perform()
     wait.until((EC.element_to_be_clickable((By.XPATH, create_button)))).click()
+    time.sleep(3)
 
 def test_tc4(setup_and_teatdown):
     wait = WebDriverWait(driver, 20)
